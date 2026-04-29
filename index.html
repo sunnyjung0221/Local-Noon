@@ -199,6 +199,23 @@ tbody tr.noon-row td { color: var(--noon) !important; font-weight: 700; }
   font-family: var(--sans); padding: 2px 0;
 }
 .collapse-btn:active { opacity: .7; }
+.stepper {
+  display: flex; align-items: center; gap: 0;
+}
+.stepper button {
+  width: 36px; height: 36px;
+  background: var(--border); border: none;
+  color: var(--text); font-size: 20px;
+  cursor: pointer; border-radius: 8px;
+  font-family: var(--sans); line-height: 1;
+  flex-shrink: 0;
+}
+.stepper button:active { opacity: .6; }
+.stepper span {
+  font-family: var(--mono); font-size: 16px;
+  color: var(--accent); min-width: 48px;
+  text-align: center;
+}
 .expand-btn {
   display: block; width: 100%; padding: 12px;
   background: none; border: none; border-top: 1px solid var(--border);
@@ -238,7 +255,11 @@ tr.hidden { display: none; }
   <div class="group">
     <div class="row">
       <span class="row-label">UTC Offset (Local Time)</span>
-      <input type="number" id="utcOffset" value="-8" min="-12" max="14" step="1" inputmode="numeric" pattern="-?[0-9]*" style="max-width:80px;text-align:right">
+      <div class="stepper">
+        <button onclick="stepOffset(-1)">−</button>
+        <span id="utcOffset">-8</span>
+        <button onclick="stepOffset(+1)">+</button>
+      </div>
     </div>
   </div>
 
@@ -424,6 +445,14 @@ function getLL() {
   return { lat, lon };
 }
 
+// ── Stepper ────────────────────────────────────────────────
+function stepOffset(delta) {
+  const el = document.getElementById('utcOffset');
+  let val = parseInt(el.textContent) + delta;
+  val = Math.max(-12, Math.min(14, val));
+  el.textContent = val;
+}
+
 // ── Main function ────────────────────────────────────────────
 function findNoon() {
   const y  = +document.getElementById('year').value;
@@ -455,7 +484,7 @@ function findNoon() {
   }
 
   // UTC offset
-  const offset = parseFloat(document.getElementById('utcOffset').value) || 0;
+  const offset = parseInt(document.getElementById('utcOffset').textContent) || 0;
   document.getElementById('offsetLabel').textContent = (offset >= 0 ? '+' : '') + offset;
 
   // Display noon card — GMT
